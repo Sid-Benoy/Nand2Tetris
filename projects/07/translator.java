@@ -1,10 +1,11 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class translator {
     public static void main(String[] args) throws IOException {
-        Parser parser = new Parser("simpleadd.vm");
-        CodeWriter codeWriter = new CodeWriter("output.asm");
+        Parser parser = new Parser("Nand2Tetris/projects/07/simpleadd.vm");
+        CodeWriter codeWriter = new CodeWriter("Nand2Tetris/projects/07/output.asm", "Nand2Tetris/projects/07/simpleadd.vm");
         int iteration = 0;
         while (true) {
             String line = parser.advance();

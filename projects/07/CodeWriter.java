@@ -10,9 +10,11 @@ public class CodeWriter {
     
     File outputFile;
     FileWriter writer;
-    public CodeWriter(String fileName) throws IOException {
+    String inputFile;
+    public CodeWriter(String fileName, String inputFile) throws IOException {
         outputFile = new File(fileName);
         writer = new FileWriter(outputFile, true);
+        this.inputFile = inputFile;
 
     }
 
@@ -92,7 +94,7 @@ public class CodeWriter {
             writer.write("(EQ_TRUE" + iteration + ")\n");
             writer.write("@SP\n");
             writer.write("A=M\n");
-            writer.write("M=1\n");
+            writer.write("M=-1\n");
             writer.write("(EQ_END" + iteration + ")\n");
             writer.write("@SP\n");
             writer.write("M=M+1\n");
@@ -109,7 +111,7 @@ public class CodeWriter {
             writer.write("A=M\n");
             writer.write("D=M\n");
             writer.write("@X\n");
-            writer.write("D=M-D\n");
+            writer.write("D=D-M\n");
             writer.write("@GT_TRUE" + iteration + "\n");
             writer.write("D;JGT\n");
             writer.write("@SP\n");
@@ -120,7 +122,7 @@ public class CodeWriter {
             writer.write("(GT_TRUE" + iteration + ")\n");
             writer.write("@SP\n");
             writer.write("A=M\n");
-            writer.write("M=1\n");
+            writer.write("M=-1\n");
             writer.write("(GT_END" + iteration + ")\n");
             writer.write("@SP\n");
             writer.write("M=M+1\n");
@@ -137,7 +139,7 @@ public class CodeWriter {
             writer.write("A=M\n");
             writer.write("D=M\n");
             writer.write("@X\n");
-            writer.write("D=M-D\n");
+            writer.write("D=D-M\n");
             writer.write("@LT_TRUE" + iteration + "\n");
             writer.write("D;JLT\n");
             writer.write("@SP\n");
@@ -148,7 +150,7 @@ public class CodeWriter {
             writer.write("(LT_TRUE" + iteration + ")\n");
             writer.write("@SP\n");
             writer.write("A=M\n");
-            writer.write("M=1\n");
+            writer.write("M=-1\n");
             writer.write("(LT_END" + iteration + ")\n");
             writer.write("@SP\n");
             writer.write("M=M+1\n");
@@ -193,7 +195,6 @@ public class CodeWriter {
         }
         else if (command.equals("not")) {
             writer.write("@SP\n");
-            writer.write("M=M-1\n");
             writer.write("M=M-1\n");
             writer.write("A=M\n");
             writer.write("D=M\n");
@@ -281,20 +282,10 @@ public class CodeWriter {
             writer.write("M=M+1\n");
             
         }
-        else if (segment.equals("static") && command.equals("C_PUSH")) {
+        else if (segment.equals("argument") && command.equals("C_POP")) {
             writer.write("@" + index + "\n");
             writer.write("D=A\n");
-            writer.write("@static\n");
-            writer.write("A=D+M\n");
-            writer.write("D=M\n");
-            writer.write("@SP\n");
-            writer.write("M=D\n");
-            writer.write("M=M+1\n");
-        }
-        else if (segment.equals("static") && command.equals("C_POP")) {
-            writer.write("@" + index + "\n");
-            writer.write("D=A\n");
-            writer.write("@static\n");
+            writer.write("@ARG\n");
             writer.write("A=D+M\n");
             writer.write("D=A\n");
             writer.write("@addr\n");
@@ -305,6 +296,96 @@ public class CodeWriter {
             writer.write("D=M\n");
             writer.write("@addr\n");
             writer.write("A=M\n");
+            writer.write("M=D\n");
+
+        }
+        else if (segment.equals("argument") && command.equals("C_PUSH")) {
+    
+            writer.write("@" + index + "\n");
+            writer.write("D=A\n");
+            writer.write("@ARG\n");
+            writer.write("A=D+M\n");
+            writer.write("D=M\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            writer.write("@SP\n");
+            writer.write("M=M+1\n");
+        }
+        else if (segment.equals("this") && command.equals("C_PUSH")) {
+            writer.write("@" + index + "\n");
+            writer.write("D=A\n");
+            writer.write("@THIS\n");
+            writer.write("A=D+M\n");
+            writer.write("D=M\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            writer.write("@SP\n");
+            writer.write("M=M+1\n");
+        }
+        else if (segment.equals("this") && command.equals("C_POP")) {
+            writer.write("@" + index + "\n");
+            writer.write("D=A\n");
+            writer.write("@THIS\n");
+            writer.write("A=D+M\n");
+            writer.write("D=A\n");
+            writer.write("@addr\n");
+            writer.write("M=D\n");
+            writer.write("@SP\n");
+            writer.write("M=M-1\n");
+            writer.write("A=M\n");
+            writer.write("D=M\n");
+            writer.write("@addr\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+
+        }
+        else if (segment.equals("that") && command.equals("C_PUSH")) {
+            writer.write("@" + index + "\n");
+            writer.write("D=A\n");
+            writer.write("@THAT\n");
+            writer.write("A=D+M\n");
+            writer.write("D=M\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            writer.write("@SP\n");
+            writer.write("M=M+1\n");
+        }
+        else if (segment.equals("that") && command.equals("C_POP")) {
+            writer.write("@" + index + "\n");
+            writer.write("D=A\n");
+            writer.write("@THAT\n");
+            writer.write("A=D+M\n");
+            writer.write("D=A\n");
+            writer.write("@addr\n");
+            writer.write("M=D\n");
+            writer.write("@SP\n");
+            writer.write("M=M-1\n");
+            writer.write("A=M\n");
+            writer.write("D=M\n");
+            writer.write("@addr\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+
+        }
+        else if (segment.equals("static") && command.equals("C_PUSH")) {
+            String staticVarName = inputFile.substring(24, inputFile.lastIndexOf('.'));
+            writer.write("@" + staticVarName + "." + index + "\n");
+            writer.write("D=M\n");
+            writer.write("@SP\n");
+            writer.write("A=M\n");
+            writer.write("M=D\n");
+            writer.write("M=M+1\n");
+        }
+        else if (segment.equals("static") && command.equals("C_POP")) {
+            String staticVarName = inputFile.substring(24, inputFile.lastIndexOf('.'));
+            writer.write("@SP\n");
+            writer.write("M=M-1\n");
+            writer.write("A=M\n");
+            writer.write("D=M\n");
+            writer.write("@" + staticVarName + "." + index + "\n");
             writer.write("M=D\n");
 
         }
